@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Power Monitoring</title>
+        <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+
+            #dataForm {
+                margin-bottom: 20px;
+            }
+
+            #messages {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            #messages li {
+                margin-bottom: 5px;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 5px;
+            }
+
+            #chartContainer {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <h1>Power Monitoring</h1>
+        <form id="dataForm">
+            <label for="voltageInput">Voltage:</label>
+            <input type="text" id="voltageInput" placeholder="Enter voltage"><br>
+            <label for="currentInput">Current:</label>
+            <input type="text" id="currentInput" placeholder="Enter current"><br>
+            <label for="devicesInput">Number of Devices:</label>
+            <input type="text" id="devicesInput" placeholder="Enter number of devices"><br>
+            <button type="submit">Send</button>
+        </form>
+        <ul id="messages"></ul>
+        <div id="chartContainer">
+            <canvas id="powerChart"></canvas>
+        </div>
+
+        <script>
+            const socket = io('http://localhost:3000');
+            const messages = []; // Store received data for chart
+            let chart = null; // Variable to hold the chart instance
+
+            socket.on('connect', () => {
+                console.log('Connected to server');
+            });
+
+            socket.on('data', (data) => {
+                const messageItem = document.createElement('li');
+                messageItem.textContent = `Voltage: ${data.voltage}, Current: ${data.current}, Devices: ${data.devices}`;
+                document.getElementById('messages').appendChild(messageItem);
+
+                // Store received data for chart
+                messages.push({
+                    timestamp: new Date().toLocaleTimeString(),
+                    power: parseFloat(data.voltage) * parseFloat(data.current),
+                });
+
+                // Update chart with new data
+                updateChart();
+            });
+
+            document.getElementById('dataForm').addEventListener('submit', (event) => {
+                event.preventDefault();
+                const voltage = document.getElementById('voltageInput').value;
+                const current = document.getElementById('currentInput').value;
+                const devices = document.getElementById('devicesInput').value;
+                socket.emit('data', { voltage, current, devices });
+            });
+
+            // Function to update the chart
+            function updateChart() {
+                if (chart !== null) {
+                    chart.destroy(); // Destroy the existing chart if it exists
+                }
+                const ctx = document.getElementById('powerChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: messages.map(msg => msg.timestamp),
+                        datasets: [{
+                            label: 'Power (W)',
+                            data: messages.map(msg => msg.power),
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                time: {
+                                    unit: 'hour',
+                                    stepSize: 1,
+                                    displayFormats: {
+                                        hour: 'HH:mm'
+                                    }
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Time'
+                                }
+                            }],
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Power (W)'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+        </script>
+    </body>
+
+</html>
