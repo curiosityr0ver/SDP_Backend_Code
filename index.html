@@ -68,7 +68,7 @@
         </div>
         <div id="optimalSchedule">
             <h2>Optimal Schedule for Running Tasks</h2>
-            <p id="optimalTime">Loading...</p>
+            <canvas id="carbonFootprintChart"></canvas>
         </div>
 
         <script>
@@ -76,6 +76,7 @@
             const messages = []; // Store received data for chart
             let powerChart = null; // Variable to hold the power chart instance
             let devicesChart = null; // Variable to hold the devices chart instance
+            let carbonFootprintChart = null; // Variable to hold the carbon footprint chart instance
 
             socket.on('connect', () => {
                 console.log('Connected to server');
@@ -193,25 +194,71 @@
                 });
             }
 
-            // Function to fetch the optimal schedule from the server
-            async function fetchOptimalSchedule(taskDuration) {
+            // Function to fetch the carbon footprint data and optimal schedule from the server
+            async function fetchCarbonFootprintData() {
                 try {
-                    const response = await axios.get(`http://localhost:3000/optimal-schedule?taskDuration=${taskDuration}`);
-                    return response.data.optimalStartTime;
+                    const response = await axios.get(`http://localhost:3000/optimal-schedule?taskDuration=3`);
+                    return response.data;
                 } catch (error) {
-                    console.error('Error fetching optimal schedule:', error);
+                    console.error('Error fetching carbon footprint data:', error);
                     return null;
                 }
             }
 
-            // Fetch and display the optimal schedule when the page loads
+            // Function to create the carbon footprint chart
+            function createCarbonFootprintChart(data, optimalSchedule) {
+                const ctx = document.getElementById('carbonFootprintChart').getContext('2d');
+                const labels = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
+                const carbonFootprint = data.map(entry => parseFloat(entry.voltage) * parseFloat(entry.current));
+
+                const optimalStartIndex = data.findIndex(entry => entry.timestamp === optimalSchedule.start);
+                const optimalEndIndex = data.findIndex(entry => entry.timestamp === optimalSchedule.end);
+
+                const backgroundColors = carbonFootprint.map((value, index) =>
+                    index >= optimalStartIndex && index <= optimalEndIndex ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 99, 132, 0.2)'
+                );
+                const borderColors = carbonFootprint.map((value, index) =>
+                    index >= optimalStartIndex && index <= optimalEndIndex ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'
+                );
+
+                carbonFootprintChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Carbon Footprint (gCO2/kWh)',
+                            data: carbonFootprint,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Time'
+                                }
+                            }],
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Carbon Footprint (gCO2/kWh)'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            // Fetch and display the carbon footprint data and optimal schedule when the page loads
             (async () => {
-                const taskDuration = 3; // Define the duration of the task in intervals (e.g., 3 intervals of 30 minutes each)
-                const optimalStartTime = await fetchOptimalSchedule(taskDuration);
-                if (optimalStartTime) {
-                    document.getElementById('optimalTime').textContent = `The optimal start time for the task is: ${new Date(optimalStartTime).toLocaleString()}`;
+                const result = await fetchCarbonFootprintData();
+                if (result) {
+                    createCarbonFootprintChart(result.carbonFootprintData, result.optimalSchedule);
                 } else {
-                    document.getElementById('optimalTime').textContent = 'Could not determine the optimal start time.';
+                    document.getElementById('optimalSchedule').textContent = 'Could not load carbon footprint data.';
                 }
             })();
         </script>

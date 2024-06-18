@@ -11,7 +11,7 @@ const getOptimalSchedule = async (req, res) => {
 
         const findOptimalSchedule = (data, duration) => {
             let minCarbonFootprint = Infinity;
-            let optimalStartTime = null;
+            let optimalStartIndex = null;
 
             for (let i = 0; i <= data.length - duration; i++) {
                 let totalCarbonFootprint = 0;
@@ -22,15 +22,18 @@ const getOptimalSchedule = async (req, res) => {
 
                 if (totalCarbonFootprint < minCarbonFootprint) {
                     minCarbonFootprint = totalCarbonFootprint;
-                    optimalStartTime = data[i].timestamp;
+                    optimalStartIndex = i;
                 }
             }
 
-            return optimalStartTime;
+            return {
+                start: data[optimalStartIndex].timestamp,
+                end: data[optimalStartIndex + duration - 1].timestamp
+            };
         };
 
-        const optimalStartTime = findOptimalSchedule(carbonFootprintData, taskDuration);
-        res.json({ optimalStartTime });
+        const optimalSchedule = findOptimalSchedule(carbonFootprintData, taskDuration);
+        res.json({ carbonFootprintData, optimalSchedule });
     } catch (error) {
         console.error('Error calculating optimal schedule:', error);
         res.status(500).json({ error: 'Internal server error' });
