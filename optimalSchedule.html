@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Optimal Task Scheduling</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="data/carbonFootprintData.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+
+            #optimalSchedule {
+                margin-top: 20px;
+            }
+
+            .chartWrapper {
+                width: 100%;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <h1>Optimal Task Scheduling</h1>
+        <div id="optimalSchedule">
+            <h2>Optimal Schedule for Running Tasks</h2>
+            <canvas id="carbonFootprintChart"></canvas>
+        </div>
+
+        <script>
+            function findOptimalSchedule(data, taskDuration) {
+                let minCarbonFootprint = Infinity;
+                let optimalStartIndex = null;
+
+                for (let i = 0; i <= data.length - taskDuration; i++) {
+                    let totalCarbonFootprint = 0;
+
+                    for (let j = 0; j < taskDuration; j++) {
+                        totalCarbonFootprint += data[i + j].carbonFootprint;
+                    }
+
+                    if (totalCarbonFootprint < minCarbonFootprint) {
+                        minCarbonFootprint = totalCarbonFootprint;
+                        optimalStartIndex = i;
+                    }
+                }
+
+                return {
+                    start: data[optimalStartIndex].timestamp,
+                    end: data[optimalStartIndex + taskDuration - 1].timestamp
+                };
+            }
+
+            function createCarbonFootprintChart(data, optimalSchedule) {
+                const ctx = document.getElementById('carbonFootprintChart').getContext('2d');
+                const labels = data.map(entry => new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                const carbonFootprint = data.map(entry => entry.carbonFootprint);
+
+                const optimalStartIndex = data.findIndex(entry => entry.timestamp === optimalSchedule.start);
+                const optimalEndIndex = data.findIndex(entry => entry.timestamp === optimalSchedule.end);
+
+                const backgroundColors = carbonFootprint.map((value, index) =>
+                    index >= optimalStartIndex && index <= optimalEndIndex ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 99, 132, 0.2)'
+                );
+                const borderColors = carbonFootprint.map((value, index) =>
+                    index >= optimalStartIndex && index <= optimalEndIndex ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'
+                );
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Carbon Footprint (gCO2/kWh)',
+                            data: carbonFootprint,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Time'
+                                }
+                            }],
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Carbon Footprint (gCO2/kWh)'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            // On page load
+            (function () {
+                const taskDuration = 3; // Define the duration of the task in intervals (e.g., 3 hours)
+                const optimalSchedule = findOptimalSchedule(carbonFootprintData, taskDuration);
+                createCarbonFootprintChart(carbonFootprintData, optimalSchedule);
+            })();
+        </script>
+    </body>
+
+</html>

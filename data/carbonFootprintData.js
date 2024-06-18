@@ -1,0 +1,28 @@
+const carbonFootprintData = [
+    { timestamp: '2024-06-18T00:00:00', carbonFootprint: 10 },
+    { timestamp: '2024-06-18T01:00:00', carbonFootprint: 8 },
+    { timestamp: '2024-06-18T02:00:00', carbonFootprint: 6 },
+    { timestamp: '2024-06-18T03:00:00', carbonFootprint: 7 },
+    { timestamp: '2024-06-18T04:00:00', carbonFootprint: 5 },
+    { timestamp: '2024-06-18T05:00:00', carbonFootprint: 4 },
+    { timestamp: '2024-06-18T06:00:00', carbonFootprint: 3 },
+    { timestamp: '2024-06-18T07:00:00', carbonFootprint: 5 },
+    { timestamp: '2024-06-18T08:00:00', carbonFootprint: 8 },
+    { timestamp: '2024-06-18T09:00:00', carbonFootprint: 10 },
+    { timestamp: '2024-06-18T10:00:00', carbonFootprint: 12 },
+    { timestamp: '2024-06-18T11:00:00', carbonFootprint: 11 },
+    { timestamp: '2024-06-18T12:00:00', carbonFootprint: 9 },
+    { timestamp: '2024-06-18T13:00:00', carbonFootprint: 6 },
+    { timestamp: '2024-06-18T14:00:00', carbonFootprint: 4 },
+    { timestamp: '2024-06-18T15:00:00', carbonFootprint: 3 },
+    { timestamp: '2024-06-18T16:00:00', carbonFootprint: 2 },
+    { timestamp: '2024-06-18T17:00:00', carbonFootprint: 4 },
+    { timestamp: '2024-06-18T18:00:00', carbonFootprint: 5 },
+    { timestamp: '2024-06-18T19:00:00', carbonFootprint: 7 },
+    { timestamp: '2024-06-18T20:00:00', carbonFootprint: 8 },
+    { timestamp: '2024-06-18T21:00:00', carbonFootprint: 9 },
+    { timestamp: '2024-06-18T22:00:00', carbonFootprint: 6 },
+    { timestamp: '2024-06-18T23:00:00', carbonFootprint: 4 },
+];
+
+module.exports = carbonFootprintData;

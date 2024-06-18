@@ -1,9 +1,8 @@
-const Message = require('../models/Message');
+const carbonFootprintData = require('../data/carbonFootprintData');
 
 const getOptimalSchedule = async (req, res) => {
     try {
         const taskDuration = parseInt(req.query.taskDuration) || 3; // Task duration in intervals (default to 3 intervals)
-        const carbonFootprintData = await Message.find().sort({ timestamp: 1 }).lean();
 
         if (carbonFootprintData.length < taskDuration) {
             return res.status(400).json({ error: 'Not enough data points to calculate optimal schedule.' });
@@ -17,7 +16,7 @@ const getOptimalSchedule = async (req, res) => {
                 let totalCarbonFootprint = 0;
 
                 for (let j = 0; j < duration; j++) {
-                    totalCarbonFootprint += parseFloat(data[i + j].voltage) * parseFloat(data[i + j].current);
+                    totalCarbonFootprint += data[i + j].carbonFootprint;
                 }
 
                 if (totalCarbonFootprint < minCarbonFootprint) {

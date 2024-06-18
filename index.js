@@ -62,6 +62,9 @@ io.on('connection', (socket) => {
 // Use the controller for the optimal-schedule endpoint
 app.get('/optimal-schedule', getOptimalSchedule);
 
+// Serve static files
+app.use(express.static('public'));
+
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
