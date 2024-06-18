@@ -19,10 +19,7 @@ const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/mydatabase
 // Middleware to handle CORS
 app.use(cors());
 
-mongoose.connect(MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+mongoose.connect(MONGO_URL);
 
 const messageSchema = new mongoose.Schema({
     voltage: String,
@@ -41,11 +38,13 @@ const saveBufferedMessages = async () => {
     if (messageBuffer.length > 0) {
         try {
             await Message.insertMany(messageBuffer);
-            console.log(`Saved ${messageBuffer.length} messages to the database.`);
+            console.log(`Saved ${messageBuffer.length} entries to the database.`);
             messageBuffer = [];
         } catch (error) {
-            console.error('Error saving messages to the database:', error);
+            console.error('Error saving entries to the database:', error);
         }
+    } else {
+        console.log('No new entries to save.');
     }
 };
 

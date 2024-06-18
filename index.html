@@ -28,8 +28,14 @@
             }
 
             #chartContainer {
-                max-width: 800px;
+                display: flex;
+                justify-content: space-between;
+                max-width: 1600px;
                 margin: 0 auto;
+            }
+
+            .chartWrapper {
+                width: 48%;
             }
 
         </style>
@@ -48,13 +54,19 @@
         </form>
         <ul id="messages"></ul>
         <div id="chartContainer">
-            <canvas id="powerChart"></canvas>
+            <div class="chartWrapper">
+                <canvas id="powerChart"></canvas>
+            </div>
+            <div class="chartWrapper">
+                <canvas id="devicesChart"></canvas>
+            </div>
         </div>
 
         <script>
             const socket = io('http://localhost:3000');
             const messages = []; // Store received data for chart
-            let chart = null; // Variable to hold the chart instance
+            let powerChart = null; // Variable to hold the power chart instance
+            let devicesChart = null; // Variable to hold the devices chart instance
 
             socket.on('connect', () => {
                 console.log('Connected to server');
@@ -69,10 +81,11 @@
                 messages.push({
                     timestamp: new Date().toLocaleTimeString(),
                     power: parseFloat(data.voltage) * parseFloat(data.current),
+                    devices: parseInt(data.devices),
                 });
 
-                // Update chart with new data
-                updateChart();
+                // Update charts with new data
+                updateCharts();
             });
 
             document.getElementById('dataForm').addEventListener('submit', (event) => {
@@ -83,13 +96,17 @@
                 socket.emit('data', { voltage, current, devices });
             });
 
-            // Function to update the chart
-            function updateChart() {
-                if (chart !== null) {
-                    chart.destroy(); // Destroy the existing chart if it exists
+            // Function to update the charts
+            function updateCharts() {
+                if (powerChart !== null) {
+                    powerChart.destroy(); // Destroy the existing power chart if it exists
                 }
-                const ctx = document.getElementById('powerChart').getContext('2d');
-                chart = new Chart(ctx, {
+                if (devicesChart !== null) {
+                    devicesChart.destroy(); // Destroy the existing devices chart if it exists
+                }
+
+                const powerCtx = document.getElementById('powerChart').getContext('2d');
+                powerChart = new Chart(powerCtx, {
                     type: 'line',
                     data: {
                         labels: messages.map(msg => msg.timestamp),
@@ -121,6 +138,45 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: 'Power (W)'
+                                }
+                            }]
+                        }
+                    }
+                });
+
+                const devicesCtx = document.getElementById('devicesChart').getContext('2d');
+                devicesChart = new Chart(devicesCtx, {
+                    type: 'line',
+                    data: {
+                        labels: messages.map(msg => msg.timestamp),
+                        datasets: [{
+                            label: 'Number of Devices',
+                            data: messages.map(msg => msg.devices),
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                time: {
+                                    unit: 'hour',
+                                    stepSize: 1,
+                                    displayFormats: {
+                                        hour: 'HH:mm'
+                                    }
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Time'
+                                }
+                            }],
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Devices'
                                 }
                             }]
                         }
