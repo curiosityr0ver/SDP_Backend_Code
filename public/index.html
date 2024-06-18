@@ -61,6 +61,7 @@
                 <canvas id="devicesChart"></canvas>
             </div>
         </div>
+        <button id="carbonFootprintButton">View Carbon Footprint</button>
 
         <script>
             const socket = io('http://localhost:3000');
@@ -94,6 +95,10 @@
                 const current = document.getElementById('currentInput').value;
                 const devices = document.getElementById('devicesInput').value;
                 socket.emit('data', { voltage, current, devices });
+            });
+
+            document.getElementById('carbonFootprintButton').addEventListener('click', () => {
+                window.open('carbonFootprint.html', '_blank');
             });
 
             // Function to update the charts
