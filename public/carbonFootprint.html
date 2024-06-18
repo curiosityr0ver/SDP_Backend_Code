@@ -4,25 +4,14 @@
     <head>
         <meta charset="UTF-8">
         <title>Carbon Footprint Monitoring</title>
-        <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-            }
-
-            #optimalSchedule {
-                margin-top: 20px;
-            }
-
-        </style>
+        <link rel="stylesheet" href="styles.css">
     </head>
 
     <body>
         <h1>Carbon Footprint Monitoring</h1>
-        <div id="optimalSchedule">
+        <div id="carbonFootprintSection">
             <h2>Optimal Schedule for Running Tasks</h2>
             <canvas id="carbonFootprintChart"></canvas>
         </div>
@@ -92,7 +81,7 @@
                 if (result) {
                     createCarbonFootprintChart(result.carbonFootprintData, result.optimalSchedule);
                 } else {
-                    document.getElementById('optimalSchedule').textContent = 'Could not load carbon footprint data.';
+                    document.getElementById('carbonFootprintSection').textContent = 'Could not load carbon footprint data.';
                 }
             })();
         </script>

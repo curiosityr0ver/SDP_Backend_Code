@@ -13,15 +13,25 @@ h1 {
     color: #0066cc;
 }
 
+#upperSection {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#leftPane,
+#rightPane {
+    width: 48%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
 #dataForm {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 #dataForm label {
@@ -53,8 +63,6 @@ h1 {
 #messages {
     list-style-type: none;
     padding: 0;
-    max-width: 600px;
-    margin: 0 auto 20px;
 }
 
 #messages li {
@@ -63,6 +71,10 @@ h1 {
     border-bottom: 1px solid #ccc;
     margin-bottom: 5px;
     border-radius: 4px;
+}
+
+#lowerSection {
+    margin-top: 20px;
 }
 
 #chartContainer {
@@ -89,4 +101,12 @@ h1 {
 
 #carbonFootprintButton:hover {
     background-color: #218838;
+}
+
+#carbonFootprintSection {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

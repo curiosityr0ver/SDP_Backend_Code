@@ -11,22 +11,31 @@
 
     <body>
         <h1>Power Monitoring</h1>
-        <form id="dataForm">
-            <label for="voltageInput">Voltage:</label>
-            <input type="text" id="voltageInput" placeholder="Enter voltage"><br>
-            <label for="currentInput">Current:</label>
-            <input type="text" id="currentInput" placeholder="Enter current"><br>
-            <label for="devicesInput">Number of Devices:</label>
-            <input type="text" id="devicesInput" placeholder="Enter number of devices"><br>
-            <button type="submit">Send</button>
-        </form>
-        <ul id="messages"></ul>
-        <div id="chartContainer">
-            <div class="chartWrapper">
-                <canvas id="powerChart"></canvas>
+        <div id="upperSection">
+            <div id="leftPane">
+                <form id="dataForm">
+                    <label for="voltageInput">Voltage:</label>
+                    <input type="text" id="voltageInput" placeholder="Enter voltage"><br>
+                    <label for="currentInput">Current:</label>
+                    <input type="text" id="currentInput" placeholder="Enter current"><br>
+                    <label for="devicesInput">Number of Devices:</label>
+                    <input type="text" id="devicesInput" placeholder="Enter number of devices"><br>
+                    <button type="submit">Send</button>
+                </form>
             </div>
-            <div class="chartWrapper">
-                <canvas id="devicesChart"></canvas>
+            <div id="rightPane">
+                <h2>Last 5 Entries</h2>
+                <ul id="messages"></ul>
+            </div>
+        </div>
+        <div id="lowerSection">
+            <div id="chartContainer">
+                <div class="chartWrapper">
+                    <canvas id="powerChart"></canvas>
+                </div>
+                <div class="chartWrapper">
+                    <canvas id="devicesChart"></canvas>
+                </div>
             </div>
         </div>
         <button id="carbonFootprintButton">View Carbon Footprint</button>
@@ -52,6 +61,12 @@
                     power: parseFloat(data.voltage) * parseFloat(data.current),
                     devices: parseInt(data.devices),
                 });
+
+                // Limit the list to the last 5 entries
+                if (messages.length > 5) {
+                    messages.shift();
+                    document.getElementById('messages').removeChild(document.getElementById('messages').firstChild);
+                }
 
                 // Update charts with new data
                 updateCharts();
