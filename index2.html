@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Optimal Task Scheduling</title>
+    </head>
+
+    <body>
+        <script>
+            // Sample carbon footprint data
+            const carbonFootprintData = [
+                { timestamp: '2024-06-18T00:00:00', carbonFootprint: 10 },
+                { timestamp: '2024-06-18T00:30:00', carbonFootprint: 8 },
+                { timestamp: '2024-06-18T01:00:00', carbonFootprint: 6 },
+                { timestamp: '2024-06-18T01:30:00', carbonFootprint: 7 },
+                { timestamp: '2024-06-18T02:00:00', carbonFootprint: 5 },
+                { timestamp: '2024-06-18T02:30:00', carbonFootprint: 4 },
+                { timestamp: '2024-06-18T03:00:00', carbonFootprint: 3 },
+                { timestamp: '2024-06-18T03:30:00', carbonFootprint: 5 },
+                { timestamp: '2024-06-18T04:00:00', carbonFootprint: 8 },
+                { timestamp: '2024-06-18T04:30:00', carbonFootprint: 10 },
+                { timestamp: '2024-06-18T05:00:00', carbonFootprint: 12 },
+                { timestamp: '2024-06-18T05:30:00', carbonFootprint: 11 },
+                { timestamp: '2024-06-18T06:00:00', carbonFootprint: 9 },
+                { timestamp: '2024-06-18T06:30:00', carbonFootprint: 6 },
+                { timestamp: '2024-06-18T07:00:00', carbonFootprint: 4 },
+                { timestamp: '2024-06-18T07:30:00', carbonFootprint: 3 },
+                { timestamp: '2024-06-18T08:00:00', carbonFootprint: 2 },
+                { timestamp: '2024-06-18T08:30:00', carbonFootprint: 4 },
+                { timestamp: '2024-06-18T09:00:00', carbonFootprint: 5 },
+                { timestamp: '2024-06-18T09:30:00', carbonFootprint: 7 },
+                { timestamp: '2024-06-18T10:00:00', carbonFootprint: 8 },
+                { timestamp: '2024-06-18T10:30:00', carbonFootprint: 9 },
+                { timestamp: '2024-06-18T11:00:00', carbonFootprint: 6 },
+                { timestamp: '2024-06-18T11:30:00', carbonFootprint: 4 },
+                { timestamp: '2024-06-18T12:00:00', carbonFootprint: 3 },
+                { timestamp: '2024-06-18T12:30:00', carbonFootprint: 5 },
+                { timestamp: '2024-06-18T13:00:00', carbonFootprint: 7 },
+                { timestamp: '2024-06-18T13:30:00', carbonFootprint: 8 },
+                { timestamp: '2024-06-18T14:00:00', carbonFootprint: 9 },
+                { timestamp: '2024-06-18T14:30:00', carbonFootprint: 10 },
+                { timestamp: '2024-06-18T15:00:00', carbonFootprint: 11 },
+                { timestamp: '2024-06-18T15:30:00', carbonFootprint: 13 },
+                { timestamp: '2024-06-18T16:00:00', carbonFootprint: 12 },
+                { timestamp: '2024-06-18T16:30:00', carbonFootprint: 10 },
+                { timestamp: '2024-06-18T17:00:00', carbonFootprint: 8 },
+                { timestamp: '2024-06-18T17:30:00', carbonFootprint: 6 },
+                { timestamp: '2024-06-18T18:00:00', carbonFootprint: 7 },
+                { timestamp: '2024-06-18T18:30:00', carbonFootprint: 5 },
+                { timestamp: '2024-06-18T19:00:00', carbonFootprint: 4 },
+                { timestamp: '2024-06-18T19:30:00', carbonFootprint: 3 },
+                { timestamp: '2024-06-18T20:00:00', carbonFootprint: 5 },
+                { timestamp: '2024-06-18T20:30:00', carbonFootprint: 8 },
+                { timestamp: '2024-06-18T21:00:00', carbonFootprint: 10 },
+                { timestamp: '2024-06-18T21:30:00', carbonFootprint: 12 },
+                { timestamp: '2024-06-18T22:00:00', carbonFootprint: 11 },
+                { timestamp: '2024-06-18T22:30:00', carbonFootprint: 9 },
+                { timestamp: '2024-06-18T23:00:00', carbonFootprint: 6 },
+                { timestamp: '2024-06-18T23:30:00', carbonFootprint: 4 }
+            ];
+
+            function getOptimalSchedule(carbonFootprintData, taskDuration) {
+                // Sort the data by timestamp
+                carbonFootprintData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+                let minCarbonFootprint = Infinity;
+                let optimalStartTime = null;
+
+                for (let i = 0; i < carbonFootprintData.length - taskDuration + 1; i++) {
+                    let totalCarbonFootprint = 0;
+
+                    for (let j = 0; j < taskDuration; j++) {
+                        totalCarbonFootprint += carbonFootprintData[i + j].carbonFootprint;
+                    }
+
+                    if (totalCarbonFootprint < minCarbonFootprint) {
+                        minCarbonFootprint = totalCarbonFootprint;
+                        optimalStartTime = carbonFootprintData[i].timestamp;
+                    }
+                }
+
+                return optimalStartTime;
+            }
+
+            // Define the duration of the task (e.g., 3 intervals of 30 minutes each)
+            const taskDuration = 3;
+
+            // Get the optimal schedule
+            const optimalStartTime = getOptimalSchedule(carbonFootprintData, taskDuration);
+            console.log(`The optimal start time for the task is: ${optimalStartTime}`);
+        </script>
+    </body>
+
+</html>

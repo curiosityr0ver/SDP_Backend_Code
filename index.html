@@ -6,6 +6,7 @@
         <title>Power Monitoring</title>
         <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -38,6 +39,10 @@
                 width: 48%;
             }
 
+            #optimalSchedule {
+                margin-top: 20px;
+            }
+
         </style>
     </head>
 
@@ -60,6 +65,10 @@
             <div class="chartWrapper">
                 <canvas id="devicesChart"></canvas>
             </div>
+        </div>
+        <div id="optimalSchedule">
+            <h2>Optimal Schedule for Running Tasks</h2>
+            <p id="optimalTime">Loading...</p>
         </div>
 
         <script>
@@ -183,6 +192,28 @@
                     }
                 });
             }
+
+            // Function to fetch the optimal schedule from the server
+            async function fetchOptimalSchedule(taskDuration) {
+                try {
+                    const response = await axios.get(`http://localhost:3000/optimal-schedule?taskDuration=${taskDuration}`);
+                    return response.data.optimalStartTime;
+                } catch (error) {
+                    console.error('Error fetching optimal schedule:', error);
+                    return null;
+                }
+            }
+
+            // Fetch and display the optimal schedule when the page loads
+            (async () => {
+                const taskDuration = 3; // Define the duration of the task in intervals (e.g., 3 intervals of 30 minutes each)
+                const optimalStartTime = await fetchOptimalSchedule(taskDuration);
+                if (optimalStartTime) {
+                    document.getElementById('optimalTime').textContent = `The optimal start time for the task is: ${new Date(optimalStartTime).toLocaleString()}`;
+                } else {
+                    document.getElementById('optimalTime').textContent = 'Could not determine the optimal start time.';
+                }
+            })();
         </script>
     </body>
 
